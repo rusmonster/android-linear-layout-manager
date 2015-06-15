@@ -1,6 +1,7 @@
 package org.solovyev.android.views.llm;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,6 +25,8 @@ public class LinearLayoutManager extends android.support.v7.widget.LinearLayoutM
 
 	private final int[] childDimensions = new int[2];
 	private final RecyclerView view;
+	// re-used variable to acquire decor insets from RecyclerView
+	final Rect mDecorInsets = new Rect();
 
 	private int childSize = DEFAULT_CHILD_SIZE;
 	private boolean hasChildSize;
@@ -227,6 +230,7 @@ public class LinearLayoutManager extends android.support.v7.widget.LinearLayoutM
 		final int hMargin = p.leftMargin + p.rightMargin;
 		final int vMargin = p.topMargin + p.bottomMargin;
 
+		calculateItemDecorationsForChild(child, mDecorInsets);
 		final int hDecoration = getRightDecorationWidth(child) + getLeftDecorationWidth(child);
 		final int vDecoration = getTopDecorationHeight(child) + getBottomDecorationHeight(child);
 

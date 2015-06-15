@@ -52,19 +52,30 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 			return;
 		}
 
+		final int position = parent.getChildAdapterPosition(view);
+		final int lastPosition = state.getItemCount() - 1;
+
 		if (getOrientation(parent) == LinearLayoutManager.VERTICAL) {
-			outRect.top = divider.getIntrinsicHeight();
-			outRect.bottom = -outRect.top;
+			if (first || position > 0) {
+				outRect.top = divider.getIntrinsicHeight();
+			}
+			if (last && position == lastPosition) {
+				outRect.bottom = divider.getIntrinsicHeight();
+			}
 		} else {
-			outRect.left = divider.getIntrinsicWidth();
-			outRect.right = -outRect.left;
+			if (first || position > 0) {
+				outRect.left = divider.getIntrinsicWidth();
+			}
+			if (last && position == lastPosition) {
+				outRect.right = divider.getIntrinsicWidth();
+			}
 		}
 	}
 
 	@Override
-	public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+	public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
 		if (divider == null) {
-			super.onDrawOver(c, parent, state);
+			super.onDraw(c, parent, state);
 			return;
 		}
 
@@ -92,11 +103,11 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 			final View child = parent.getChildAt(i);
 			final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
 			if (vertical) {
-				top = child.getTop() - params.topMargin;
-				bottom = top + size;
+				bottom = child.getTop() - params.topMargin;
+				top = bottom - size;
 			} else {
-				left = child.getLeft() - params.leftMargin;
-				right = left + size;
+				right = child.getLeft() - params.leftMargin;
+				left = right - size;
 			}
 			divider.setBounds(left, top, right, bottom);
 			divider.draw(c);
