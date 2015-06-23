@@ -51,8 +51,16 @@ dependencies {
 
 task androidJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    configurations.compile.each { File file -> classpath += project.files(file.path) }
+    classpath = project.files(android.getBootClasspath())
+
+    android.applicationVariants.all { variant ->
+        classpath += project.files(variant.javaCompile.classpath)
+    }
+
+    options.links("http://docs.oracle.com/javase/7/docs/api/");
+    options.linksOffline("http://d.android.com/reference/", "${android.sdkDirectory}/docs/reference");
+    exclude '**/BuildConfig.java'
+    exclude '**/R.java'
 }
 
 task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
