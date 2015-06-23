@@ -33,22 +33,41 @@ android {
         versionCode version_code()
         versionName version_name()
     }
+
+    libraryVariants.all { variant ->
+        if (variant.buildType.name.equals("debug")) {
+            return
+        }
+
+        def variantName = variant.name.capitalize()
+
+        task("android${variantName}Javadoc", type: Javadoc, dependsOn: "assemble$variantName") {
+            description "Generates Javadoc for build $variantName."
+            destinationDir = new File(destinationDir, variant.baseName)
+            source = variant.javaCompile.source
+            classpath = files(getBootClasspath(), variant.javaCompile.classpath)
+            options.links("http://docs.oracle.com/javase/7/docs/api/");
+            options.linksOffline("http://d.android.com/reference/", "${android.sdkDirectory}/docs/reference");
+            exclude '**/BuildConfig.java'
+            exclude '**/R.java'
+        }
+
+        task("android${variantName}JavadocsJar", type: Jar, dependsOn: "android${variantName}Javadoc") {
+            description "Bundles Javadoc into jar for build $variantName."
+            classifier = 'javadoc'
+            destinationDir = new File(destinationDir, variant.baseName)
+            from tasks."android${variantName}Javadoc".destinationDir
+        }
+
+        artifacts {
+            archives tasks."android${variantName}JavadocsJar"
+        }
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:recyclerview-v7:22.0.0'
-}
-
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    configurations.compile.each { File file -> classpath += project.files(file.path) }
-}
-
-task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
-    classifier = 'javadoc'
-    from androidJavadocs.destinationDir
 }
 
 task androidSourcesJar(type: Jar) {
@@ -74,7 +93,6 @@ task apklib(type: Zip) {
 
 artifacts {
     archives androidSourcesJar
-    archives androidJavadocsJar
     archives apklib
 }
 
