@@ -21,9 +21,8 @@ public String android_min_sdk_version() {
 }
 
 buildscript {
-
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.2.3'
@@ -32,10 +31,7 @@ buildscript {
 
 allprojects {
     repositories {
-        maven {
-            url "file://${System.env.ANDROID_HOME}/extras/android/m2repository/"
-        }
-        mavenCentral()
+        jcenter()
     }
 
     if (!project.hasProperty("ossrhUsername")) {
