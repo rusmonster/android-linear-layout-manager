@@ -30,8 +30,6 @@ public class LinearLayoutManager extends android.support.v7.widget.LinearLayoutM
 
 	private final int[] childDimensions = new int[2];
 	private final RecyclerView view;
-	// re-used variable to acquire decor insets from RecyclerView
-	final Rect mDecorInsets = new Rect();
 
 	private int childSize = DEFAULT_CHILD_SIZE;
 	private boolean hasChildSize;
